@@ -127,24 +127,74 @@ Step T must be finished before step E can begin.";
         }
         Console.WriteLine("Done with input.");
 
-        var start = _inputData.Where(x => !_inputData.Any(y => y.FinishBefore == x.Letter)).OrderBy(x => x.FinishBefore).First();
-        _inputData.Remove(start);
+        // var start = _inputData.Where(x => !_inputData.Any(y => y.FinishBefore == x.Letter)).OrderBy(x => x.FinishBefore).First();
+        // _inputData.Remove(start);
         
-        var letters = new string[] {start.Letter, start.FinishBefore}.ToList();
-        _inputData = _inputData.OrderBy(x => x.FinishBefore).ThenBy(x => x.Letter).ToList();
+        // var letters = new string[] {start.Letter, start.FinishBefore}.ToList();
+        // _inputData = _inputData.OrderBy(x => x.FinishBefore).ThenBy(x => x.Letter).ToList();
 
+        // foreach(var inp in _inputData)
+        // {
+        //         var index = letters.FindIndex(x => x.ToCharArray()[0] > inp.Letter.ToCharArray()[0]);
+        //         if(!letters.Any(x => x == inp.FinishBefore))
+        //         {
+        //             if(index > 0)
+        //                 letters.Insert(index + 1, inp.FinishBefore);
+        //             else
+        //                 letters.Add(inp.FinishBefore);
+        //         }
+        // }
+        // Console.WriteLine(string.Join("", letters));
+        var allLast = _inputData.Where(x => !_inputData.Any(y => y.Letter == x.FinishBefore));
+        var last = allLast.OrderBy(x => x.FinishBefore).First();
+        var nodes = new List<Node2>();
         foreach(var inp in _inputData)
         {
-                var index = letters.FindIndex(x => x.ToCharArray()[0] > inp.Letter.ToCharArray()[0]);
-                if(!letters.Any(x => x == inp.FinishBefore))
+            Console.WriteLine(inp.Letter);
+            var node = nodes.FirstOrDefault(x => x.Letter == inp.FinishBefore);
+            if(node == null)
+            {
+                node = new Node2 
                 {
-                    if(index > 0)
-                        letters.Insert(index + 1, inp.FinishBefore);
-                    else
-                        letters.Add(inp.FinishBefore);
-                }
+                    Letter  = inp.FinishBefore,
+                    Master = new List<Node2>()
+                };
+            }
+            var existing = nodes.FirstOrDefault(x => x.Letter == inp.Letter);
+            if(existing == null)
+            {
+                var master = new Node2 
+                {
+                    Letter  = inp.Letter,
+                    Master = new List<Node2>()
+                };
+                nodes.Add(master);
+                node.Master.Add(master);
+            }
+            else
+                node.Master.Add(existing);
+            nodes.Add(node);
         }
-        Console.WriteLine(string.Join("", letters));
+        var result = string.Empty;
+        BuildResult(nodes.First(x => x.Letter == last.FinishBefore), ref result);
     }
 
+    private void BuildResult(Node2 node, ref string result)
+    {   
+        if(node.Master.Any())
+        {
+            var nodes = node.Master.OrderByDescending(x => x.Letter);
+            //result += string.Join("", nodes.Select(x => x.Letter));
+            foreach(var m in nodes) 
+                if(result.IndexOf(m.Letter) == -1)
+                    result += m.Letter;
+            foreach(var m in nodes) 
+                BuildResult(m, ref result);
+        }
+    }
+    public class Node2
+    {
+        public string Letter { get; set; }
+        public List<Node2> Master { get; set; }
+    }
 }

@@ -12,9 +12,9 @@ namespace AdventOfCode
         static void Main(string[] args)
         {
            //new Advent2018_6().Solve();
-           //new Advent2018_7().Solve();
+           new Advent2018_7().Solve();
            //new Advent2018_10().Solve();
-           new Advent2018_8().Solve();
+           //new Advent2018_8().Solve();
         }
     }
 }
