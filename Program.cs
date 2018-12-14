@@ -16,7 +16,9 @@ namespace AdventOfCode
            //new Advent2018_10().Solve();
            //new Advent2018_8().Solve();
            //new Advent2018_11().Solve();
-           new Advent2018_12().Solve();
+            // new Advent2018_12().Solve(); 
+            //new Advent2018_13().Solve();
+            new Advent2018_14().Solve();
         }
     }
 }
