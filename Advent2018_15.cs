@@ -25,7 +25,7 @@ public class Advent2018_15
                 if(type =='#')
                     map[x, y] = new Cell { Type = CellType.Wall };
                 else if(type =='G')
-                    map[x, y] = new Cell { Type = CellType.Goblin };
+                    map[x, y] = new Cell    { Type = CellType.Goblin };
                 else if(type =='E')
                     map[x, y] = new Cell { Type = CellType.Elf };
             }

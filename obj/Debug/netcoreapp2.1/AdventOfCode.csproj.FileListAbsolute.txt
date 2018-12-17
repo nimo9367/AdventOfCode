@@ -9,3 +9,14 @@ C:\Dev\AdventOfCode\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.AssemblyIn
 C:\Dev\AdventOfCode\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.AssemblyInfo.cs
 C:\Dev\AdventOfCode\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.dll
 C:\Dev\AdventOfCode\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.pdb
+C:\Dev\Random projects\AdventOfCode\bin\Debug\netcoreapp2.1\AdventOfCode.deps.json
+C:\Dev\Random projects\AdventOfCode\bin\Debug\netcoreapp2.1\AdventOfCode.runtimeconfig.json
+C:\Dev\Random projects\AdventOfCode\bin\Debug\netcoreapp2.1\AdventOfCode.runtimeconfig.dev.json
+C:\Dev\Random projects\AdventOfCode\bin\Debug\netcoreapp2.1\AdventOfCode.dll
+C:\Dev\Random projects\AdventOfCode\bin\Debug\netcoreapp2.1\AdventOfCode.pdb
+C:\Dev\Random projects\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.csprojAssemblyReference.cache
+C:\Dev\Random projects\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.csproj.CoreCompileInputs.cache
+C:\Dev\Random projects\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.AssemblyInfoInputs.cache
+C:\Dev\Random projects\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.AssemblyInfo.cs
+C:\Dev\Random projects\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.dll
+C:\Dev\Random projects\AdventOfCode\obj\Debug\netcoreapp2.1\AdventOfCode.pdb
