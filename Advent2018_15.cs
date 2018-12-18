@@ -7,15 +7,13 @@ public class Advent2018_15
 
     public void Solve()
     {
-        var input = @"#########
-#G..G..G#
-#.......#
-#.......#
-#G..E..G#
-#.......#
-#.......#
-#G..G..G#
-#########";
+        var input = @"#######
+#E..EG#
+#.#G.E#
+#E.##E#
+#G..#.#
+#..E#.#
+#######";
         var inputData = input.Split(new string[] { "\r\n" }, StringSplitOptions.None).Select(x => x.ToCharArray());
         var map = new Cell[inputData.First().Count(), inputData.Count()];
 
@@ -29,30 +27,32 @@ public class Advent2018_15
             {
                 var type = inputData.ElementAt(y).ElementAt(x);
                 if (type == '#')
-                    walls.Add(new Cell { Type = CellType.Wall, Coord = (x, y) });
+                    walls.Add(new Cell { Type = CellType.Wall, Coord = (x, y), Health = 200 });
                 else if (type == 'G')
-                    goblins.Add(new Cell { Type = CellType.Goblin, Coord = (x, y), Health = 100 });
+                    goblins.Add(new Cell { Type = CellType.Goblin, Coord = (x, y), Health = 200 });
                 else if (type == 'E')
-                    elfs.Add(new Cell { Type = CellType.Elf, Coord = (x, y), Health = 100 });
+                    elfs.Add(new Cell { Type = CellType.Elf, Coord = (x, y), Health = 200 });
             }
         }
-        while(elfs.Concat(goblins).Any(x => x.Health > 0 && x.Type == CellType.Elf))
+        var round = 0;
+        while(elfs.Concat(goblins).Where(x => x.Health > 0).GroupBy(x => x.Type).Count() > 1)
         {
             var combatants = elfs.Concat(goblins).OrderBy(x => x.Coord.Y).ThenBy(x => x.Coord.X);
-            foreach (var combatant in combatants)
+            foreach (var combatant in combatants.Where(x => x.Health > 0))
             {
                 var enemies = combatant.Type == CellType.Goblin ? elfs : goblins;
                 {
                     var distances = new List<Node>();
-                    foreach(var enemy in enemies.OrderBy(x => x.Coord.Y).ThenBy(x => x.Coord.X))
-                        distances.AddRange(findDistance(combatant, enemy, combatants.Concat(walls).Except(new Cell[] { combatant } )));
+                    foreach(var enemy in enemies.Where(x => x.Health > 0).OrderBy(x => x.Coord.Y).ThenBy(x => x.Coord.X))
+                        distances.AddRange(findDistance(combatant, enemy, combatants.Where(x => x.Health > 0).Concat(walls).Except(new Cell[] { combatant } )));
 
-                    if(!distances.Any())
+                    if(!distances.Any() || combatant.Health == 0)
                         continue;
                     
                     var shortestDistances = distances.GroupBy(x => x.Distance).OrderBy(x => x.Key).First().OrderBy(x => x.Coord.Y).ThenBy(x => x.Coord.X);
                     var shortestDistance = shortestDistances.First();
                     Node parentNode = shortestDistance;
+                    var moved = false;
                     if(parentNode.Distance > 1)
                     {
                         (int X, int Y) nextCoord = (-1, -1);
@@ -62,20 +62,33 @@ public class Advent2018_15
                             parentNode = parentNode.Parent; 
                         }
                         combatant.Coord = nextCoord;
-                        Console.WriteLine($"({combatant.Coord.X}, {combatant.Coord.Y})");
+                        moved = true;
                     }
-                    else
+                    if(parentNode.Distance == 1)
                     {
-                        var enemy = enemies.FirstOrDefault(x => x.Coord.X == shortestDistance.Coord.X && x.Coord.Y == shortestDistance.Coord.Y);
-                        if(enemy.Health > 0)
-                            enemy.Health -= 3;
-                        else
-                            enemy.Health = 0;
+                        var enemiesInRange = enemies.Where(x => shortestDistances.Any(y => x.Coord.X == y.Coord.X && x.Coord.Y == y.Coord.Y));
+                        var enemy = enemiesInRange.OrderBy(x => x.Health).FirstOrDefault();
+                        if(enemy != null)
+                        {
+                            if(enemy.Health >= 3)
+                                enemy.Health = enemy.Health - 3 - (moved ? 3 : 0);
+                            else
+                                enemy.Health = 0;
+                        }
                     }
                 }
             }
+            round++;
+            Console.WriteLine("Round: " + round);
             Print(combatants.Concat(walls), inputData.First().Count(), inputData.Count());
+            foreach(var c in combatants)
+                Console.WriteLine($"{c.Type}({c.Health})");
+            
         }
+        Print(elfs.Concat(goblins).Concat(walls), inputData.First().Count(), inputData.Count());
+        var sum = elfs.Concat(goblins).Where(x => x.Health > 0).Sum(x => x.Health);
+        Console.WriteLine("Sum: " + sum);
+        Console.WriteLine("Round: " + round);
     }
 
     private void Print(IEnumerable<Cell> cells, int xMax, int yMax)
@@ -85,7 +98,7 @@ public class Advent2018_15
             var line = string.Empty;
             for(var x = 0; x < xMax; x++)
             {
-                var cell = cells.FirstOrDefault(c => c.Coord.X == x && c.Coord.Y == y);
+                var cell = cells.FirstOrDefault(c => c.Coord.X == x && c.Coord.Y == y && c.Health > 0);
                 if(cell != null)
                 {
                     if(cell.Type == CellType.Elf)
@@ -110,7 +123,7 @@ public class Advent2018_15
         var start = new Node() { Coord = combatant.Coord, Distance = 0 };
         q.Enqueue(start);
         while (q.Count > 0)
-        {
+        { 
             Node current = q.Dequeue();
             if (current == null)
                 continue;
@@ -126,9 +139,9 @@ public class Advent2018_15
             var bottom = obsticles.FirstOrDefault(x => x.Coord.X == current.Coord.X && x.Coord.Y == current.Coord.Y + 1);
             var neighbours = new (int X, int Y)[] 
             { 
-                left != null ? (left.Type != enemy.Type ? (-1, -1) : left.Coord) : (current.Coord.X - 1, current.Coord.Y), 
-                right != null ? (right.Type != enemy.Type ? (-1, -1) : right.Coord): (current.Coord.X + 1, current.Coord.Y), 
                 top != null ? (top.Type != enemy.Type ? (-1, -1) : top.Coord) : (current.Coord.X, current.Coord.Y - 1), 
+                right != null ? (right.Type != enemy.Type ? (-1, -1) : right.Coord): (current.Coord.X + 1, current.Coord.Y), 
+                left != null ? (left.Type != enemy.Type ? (-1, -1) : left.Coord) : (current.Coord.X - 1, current.Coord.Y), 
                 bottom != null ? (bottom.Type != enemy.Type ? (-1, -1) : bottom.Coord) : (current.Coord.X, current.Coord.Y + 1) 
             };
 
